@@ -31,13 +31,6 @@ void schellingSwap(Schelling* schelling, int ax, int ay, int bx, int by) {
     schelling->grid[by][bx] = tmp;
 }
 
-void posSwap(Position_t* arr, int a, int b);
-void posSwap(Position_t* arr, int a, int b) {
-    Position_t tmp = arr[a];
-    arr[a] = arr[b];
-    arr[b] = tmp;
-}
-
 Schelling *schellingInit(int height, int width, double probRed, double probBlue, double satisRatio) {
     // Check that there won't be too many reds or blues
     if (probRed + probBlue > 1.0) { return NULL; }
