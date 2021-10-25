@@ -8,8 +8,8 @@ struct Position {
 };
 typedef struct Position Position_t;
 
-CellType** allocCells(size_t width, size_t height);
-CellType** allocCells(size_t width, size_t height) {
+CellType** allocCells(int width, int height);
+CellType** allocCells(int width, int height) {
     CellType** arr;
 
     // Allocate rows
@@ -46,9 +46,6 @@ Schelling *schellingInit(int height, int width, double probRed, double probBlue,
     Schelling* schel = malloc(sizeof(Schelling));
     if (!schel) { return NULL; }
 
-    // Calculate the number of each type of element
-    size_t gridSize = width * height;
-
     // Load parameter in the structure
     schel->width = width;
     schel->height = height;
@@ -84,11 +81,17 @@ Schelling *schellingInit(int height, int width, double probRed, double probBlue,
 }
 
 int schellingIsUnsatisfied(Schelling* schelling, int h, int w) {
+    if (!schelling) { return -1; }
     int sameCount = 0;
     int counted = 0;
 
-    // Get type of the cell to check
+    // Check that the cell is in the grid
+    if (h >= schelling->height || h < 0) { return -1; }
+    if (w >= schelling->width || w < 0) { return -1; }
+
+    // Get type of the cell to check, if it's empty, return an error
     CellType type = schelling->grid[h][w];
+    if (type == EMPTY) { return -1; }
 
     // Count the number of identical cells directly around the cell
     for (int dy = -1; dy <= 1; dy++) {
@@ -109,7 +112,8 @@ int schellingIsUnsatisfied(Schelling* schelling, int h, int w) {
         }
     }
 
-    if (!counted) { return 1; }
+    // If alone, the cell is satisfied (can relate...)
+    if (!counted) { return 0; }
 
     // Calculate the ratio and return accordingly
     double ratio = (double)sameCount / (double)counted;
@@ -118,9 +122,14 @@ int schellingIsUnsatisfied(Schelling* schelling, int h, int w) {
 
 // Complexity : O(n)
 int schellingOneStep(Schelling *schelling) {
+    // If there are no empty place, no student can switch place.
+    if (!schelling || !schelling->nbEmpty) { return 0; }
+
     // Allocate work arrays
     Position_t* emptyPos = malloc(sizeof(Position_t) * schelling->nbEmpty);
+    if (!emptyPos) { return 0; }
     Position_t* unsatisfiedPos = malloc(sizeof(Position_t) * schelling->width * schelling->height);
+    if (!unsatisfiedPos) { return 0; }
     
     // Save all empty and unsatisfied positions
     int emptyId = 0;
@@ -169,6 +178,7 @@ void schellingFree(Schelling *schelling) {
 
     // Free each row
     for (int i = 0; i < schelling->height; i++) {
+        if (!schelling->grid[i]) { continue; }
         free(schelling->grid[i]);
     }
 
