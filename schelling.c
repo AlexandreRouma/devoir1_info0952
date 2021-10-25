@@ -175,6 +175,9 @@ void schellingFree(Schelling *schelling) {
         free(schelling->grid[i]);
     }
 
+    // Free the grid
+    if (schelling->grid) { free(schelling->grid); }
+
     // Free the struct
     free(schelling);
 }
