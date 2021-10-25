@@ -54,7 +54,7 @@ Schelling *schellingInit(int height, int width, double probRed, double probBlue,
     // Fill out cells
     schel->nbEmpty = 0;
     for (int y = 0; y < height; y++) {
-        for (int x = 0; x < height; x++) {
+        for (int x = 0; x < width; x++) {
             // Use a random value between 0.0 and 1.0 to chose the cell type
             double linRand = (double)rand() / (double)RAND_MAX;
             if (linRand < probRed) {
